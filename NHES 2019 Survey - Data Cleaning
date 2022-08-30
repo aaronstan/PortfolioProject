@@ -1,0 +1,234 @@
+-- Table of student index and grades
+With student_grades AS 
+(
+Select DISTINCT(BASMID) as Survey_Id,
+ALLGRADEX as Grade,
+SEGRADES,
+CASE 
+	WHEN SEGRADES = 1 THEN "A's"
+    WHEN SEGRADES = 2 THEN "B's"
+    WHEN SEGRADES = 3 THEN "C's"
+    WHEN SEGRADES = 4 THEN "D's or lower"
+    WHEN SEGRADES = 5 THEN 'No data'
+    ELSE SEGRADES is null
+END as GPA,
+EDCPUB as PublicSchool
+From PortfolioProject.nhes_19_studentdemos
+Where EDCPUB = 1
+)
+SELECT Survey_Id, Grade, GPA
+From student_grades
+Order by 2, 1;
+
+-- Behavior contact table for public school students
+Select DISTINCT(BASMID) as Survey_Id,
+SEBEHAVX as num_contact_about_bad_behavior,
+SESCHWRK as num_contact_about_poor_work,
+SEGBEHAV as num_contact_about_good_behavior,
+SEGWORK as num_contact_about_good_work
+From PortfolioProject.nhes_19_studentdemos
+Where EDCPUB = 1
+Order by 1, 2;
+
+-- Satisfaction report with school community and services
+With satisfaction_report AS
+(
+Select DISTINCT(BASMID) as Survey_Id,
+FCSCHOOL,
+CASE 
+	WHEN FCSCHOOL = 1 THEN 'Very Satisfied'
+    WHEN FCSCHOOL = 2 THEN 'Somewhat Satisfied'
+    WHEN FCSCHOOL = 3 THEN 'Somewhat Dissatisfied'
+    WHEN FCSCHOOL = 4 THEN 'Very Dissatisfied'
+    ELSE FCSCHOOL is null
+END as satisfaction_w_school,
+FCTEACHR,
+CASE 
+	WHEN FCTEACHR = 1 THEN 'Very Satisfied'
+    WHEN FCTEACHR = 2 THEN 'Somewhat Satisfied'
+    WHEN FCTEACHR = 3 THEN 'Somewhat Dissatisfied'
+    WHEN FCTEACHR = 4 THEN 'Very Dissatisfied'
+    ELSE FCTEACHR is null
+END as satisfaction_w_teachers,
+FCSTDS,
+CASE 
+	WHEN FCSTDS = 1 THEN 'Very Satisfied'
+    WHEN FCSTDS = 2 THEN 'Somewhat Satisfied'
+    WHEN FCSTDS = 3 THEN 'Somewhat Dissatisfied'
+    WHEN FCSTDS = 4 THEN 'Very Dissatisfied'
+    ELSE FCSTDS is null
+END as satisfaction_w_standards,
+FCORDER,
+CASE 
+	WHEN FCORDER = 1 THEN 'Very Satisfied'
+    WHEN FCORDER = 2 THEN 'Somewhat Satisfied'
+    WHEN FCORDER = 3 THEN 'Somewhat Dissatisfied'
+    WHEN FCORDER = 4 THEN 'Very Dissatisfied'
+    ELSE FCORDER is null
+END as satisfaction_w_discipline,
+FCSUPPRT,
+CASE 
+	WHEN FCSUPPRT = 1 THEN 'Very Satisfied'
+    WHEN FCSUPPRT = 2 THEN 'Somewhat Satisfied'
+    WHEN FCSUPPRT = 3 THEN 'Somewhat Dissatisfied'
+    WHEN FCSUPPRT = 4 THEN 'Very Dissatisfied'
+    ELSE FCSUPPRT is null
+END as satisfaction_w_interactions
+From PortfolioProject.nhes_19_studentdemos
+Where EDCPUB = 1
+)
+SELECT Survey_Id, satisfaction_w_school, satisfaction_w_teachers, 
+satisfaction_w_standards, satisfaction_w_discipline, satisfaction_w_interactions
+FROM satisfaction_report
+Order by 1;
+
+-- Homework survey questions
+With hw_report AS 
+(
+SELECT DISTINCT(BASMID) as Survey_Id,
+FHHOME,
+CASE 
+	WHEN FHHOME = 1 THEN 'Less than once a week'
+    WHEN FHHOME = 2 THEN '1 to 2 days a week'
+    WHEN FHHOME = 3 THEN '3 to 4 days a week'
+    WHEN FHHOME = 4 THEN '5 or more days a week'
+    WHEN FHHOME = 5 THEN 'Never'
+    WHEN FHHOME = 6 THEN 'No homework'
+    ELSE FHHOME is null
+END as days_on_hw,
+FHWKHRS,
+CASE
+	WHEN FHWKHRS = -1 THEN FHWKHRS is null
+    ELSE FHWKHRS
+END as hrs_on_hw,
+CASE
+	WHEN FHAMOUNT = 1 THEN 'Right Amount'
+    WHEN FHAMOUNT = 2 THEN 'Too much HW'
+    WHEN FHAMOUNT = 3 THEN 'Too Little HW'
+    ELSE FHAMOUNT is null
+END  as parents_feels_about_amount_hw,
+FHCAMT,
+CASE
+	WHEN FHCAMT = 1 THEN 'Right Amount'
+    WHEN FHCAMT = 2 THEN 'Too much HW'
+    WHEN FHCAMT = 3 THEN 'Too Little HW'
+    ELSE FHCAMT is null
+END as students_feels_about_amount_hw,
+FHPLACE,
+CASE
+	WHEN FHPLACE = 1 THEN 'Yes'
+    WHEN FHPLACE = 2 THEN 'No'
+    WHEN FHPLACE = 3 THEN 'HW not done at home'
+    ELSE FHPLACE is null
+END as place_to_do_hw,
+FHCHECKX,
+CASE 
+	WHEN FHCHECKX = 1 THEN 'Never'
+    WHEN FHCHECKX = 2 THEN 'Rarely'
+    WHEN FHCHECKX = 3 THEN 'Sometimes'
+    WHEN FHCHECKX = 4 THEN 'Always'
+    ELSE FHCHECKX is null
+END as adult_check_hw,
+FHHELP,
+CASE 
+	WHEN FHHELP = 1 THEN 'Less than once a week'
+    WHEN FHHELP = 2 THEN '1 to 2 days a week'
+    WHEN FHHELP = 3 THEN '3 to 4 days a week'
+    WHEN FHHELP = 4 THEN '5 or more days a week'
+    WHEN FHHELP = 5 THEN 'Never'
+    ELSE FHHELP is null
+END as days_helped_w_hw
+From PortfolioProject.nhes_19_studentdemos
+Where EDCPUB = 1
+)
+SELECT Survey_id, days_on_hw, hrs_on_hw, parents_feels_about_amount_hw,
+students_feels_about_amount_hw, place_to_do_hw, adult_check_hw,
+days_helped_w_hw
+From hw_report
+Order by 1;
+
+-- Participation in school community
+With school_participation AS 
+(
+SELECT DISTINCT(BASMID) as Survey_Id,
+FSSPORTX,
+CASE
+	WHEN FSSPORTX = 1 THEN 'Yes'
+    WHEN FSSPORTX = 2 THEN 'No'
+    ELSE FSSPORTX is null
+END as attended_student_event,
+FSVOL,
+CASE
+	WHEN FSVOL = 1 THEN 'Yes'
+    WHEN FSVOL = 2 THEN 'No'
+    ELSE FSVOL is null
+END as volunteered,
+FSMTNG,
+CASE
+	WHEN FSMTNG = 1 THEN 'Yes'
+    WHEN FSMTNG = 2 THEN 'No'
+    ELSE FSMTNG is null
+END as attend_school_meeting,
+FSPTMTNG,
+CASE
+	WHEN FSPTMTNG = 1 THEN 'Yes'
+    WHEN FSPTMTNG = 2 THEN 'No'
+    ELSE FSPTMTNG is null
+END as attend_parent_teacher_meeting,
+FSATCNFN,
+CASE
+	WHEN FSATCNFN = 1 THEN 'Yes'
+    WHEN FSATCNFN = 2 THEN 'No'
+    ELSE FSATCNFN is null
+END as parent_teacher_conference,
+FSFUNDRS,
+CASE
+	WHEN FSFUNDRS = 1 THEN 'Yes'
+    WHEN FSFUNDRS = 2 THEN 'No'
+    ELSE FSFUNDRS is null
+END as attend_fundraiser,
+FSCOMMTE,
+CASE
+	WHEN FSCOMMTE = 1 THEN 'Yes'
+    WHEN FSCOMMTE = 2 THEN 'No'
+    ELSE FSCOMMTE is null
+END as serve_on_committee,
+FSCOUNSLR,
+CASE
+	WHEN FSCOUNSLR = 1 THEN 'Yes'
+    WHEN FSCOUNSLR = 2 THEN 'No'
+    ELSE FSCOUNSLR is null
+END as met_w_counselor,
+FSFREQ as num_of_school_meetings
+From PortfolioProject.nhes_19_studentdemos
+Where EDCPUB = 1
+)
+SELECT Survey_Id, attended_student_event, volunteered, attend_school_meeting,
+attend_parent_teacher_meeting, parent_teacher_conference, attend_fundraiser,
+serve_on_committee, met_w_counselor, num_of_school_meetings
+From school_participation
+Order by 1;
+
+-- identifies duplicate Id Numbers
+SELECT BASMID, COUNT(BASMID) as IdCount
+From PortfolioProject.nhes_19_studentdemos
+Group by BASMID
+HAVING IdCount > 1
+Order by IdCount desc;
+
+-- Average GPA by grade for public school students
+Select studentdemo.ALLGRADEX, studentdemo.EDCPUB, 
+	AVG(studentdemo.SEGRADES) Over (Partition by studentdemo.ALLGRADEX) as AvgGrade
+	From PortfolioProject.nhes_19_studentdemos studentdemo
+    JOIN PortfolioProject.nhes_19_surveyitems surveyitem
+		on studentdemo.BASMID = surveyitem.BASMID
+	Where EDCPUB = 1
+	Order by 1, 2;
+
+-- Create CTE of desired data and 
+-- Data Cleaning of CTE: update skipped questions into null values
+-- remove duplicate id numbers
+
+SELECT COUNT(DISTINCT(BASMID)) as Number_of_Pub_Students
+From PortfolioProject.nhes_19_studentdemos 
+where EDCPUB = 1;
